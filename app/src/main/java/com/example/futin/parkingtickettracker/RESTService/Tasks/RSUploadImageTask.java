@@ -10,7 +10,6 @@ import com.example.futin.parkingtickettracker.RESTService.response.RSUploadImage
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,14 +23,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 
 public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageResponse> {
     final String TAG="imageUploadTask";
     RSUploadImageRequest request;
     RestTemplate restTemplate;
     AsyncTaskReturnData returnData;
-    String boundary = "*****";
 
     public RSUploadImageTask( AsyncTaskReturnData returnData, RSUploadImageRequest request) {
         this.request=request;
@@ -39,21 +36,24 @@ public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageRespon
         restTemplate=new RestTemplate();
     }
 
+
     @Override
     protected RSUploadImageResponse doInBackground(Void... params) {
         try {
             HttpHeaders header = new HttpHeaders();
             header.set("Connection", "Keep-Alive");
-            header.set("Content-Type", "multipart/form-data;boundary=" + boundary);
+            header.setContentType(MediaType.MULTIPART_FORM_DATA);
+
             String filePath=request.getFilePath();
             MultiValueMap<String, Object> parts =
                     new LinkedMultiValueMap<>();
+
             parts.add("ticketPhoto", new FileSystemResource(filePath));
+
             HttpEntity<MultiValueMap<String, Object>> entity =
                     new HttpEntity<>(parts, header);
             String address = RSDataSingleton.getInstance().getServerUrl().getUploadImageUrl();
 
-            Log.i(TAG, "entity: " + entity);
             Log.i(TAG, "Before response ");
             ResponseEntity response = restTemplate.exchange(address, HttpMethod.POST, entity, String.class);
             Log.i(TAG, "After response ");
@@ -68,16 +68,14 @@ public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageRespon
                         HttpStatus.INTERNAL_SERVER_ERROR.name());
             } else {
                 Log.i(TAG, "Response ok ");
-                //TODO response
                 String jsonBody=response.getBody().toString();
                 Log.i(TAG, jsonBody);
                 JSONArray array=new JSONArray(jsonBody);
                 String fileName="";
                 for (int i=0; i<array.length();i++){
                     JSONObject objResponse=array.getJSONObject(i);
+                    fileName = objResponse.getString("response");
                     Log.i(TAG,objResponse.toString());
-                    fileName=objResponse.getString("response");
-
                 }
                 Log.i(TAG, "fileName:  "+fileName);
 
@@ -85,9 +83,6 @@ public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageRespon
                         HttpStatus.OK.name(),fileName);
 
             }
-
-
-
 
         } catch (HttpClientErrorException e) {
             Log.e(TAG, "Http Status: " + e.getStatusCode());
@@ -101,7 +96,7 @@ public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageRespon
                     e.getStatusText());
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
-            return new RSUploadImageResponse(null, null);
+            return new RSUploadImageResponse(e.getMessage());
         }
     }
 
