@@ -7,8 +7,17 @@ import org.springframework.http.HttpStatus;
  */
 public class RSUploadImageResponse extends BaseApiResponse{
 
+    String fileName="";
     public RSUploadImageResponse(HttpStatus status, String statusName) {
         super(status, statusName);
     }
 
+    public RSUploadImageResponse(HttpStatus status, String statusName, String fileName) {
+        super(status, statusName);
+        this.fileName = fileName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
 }

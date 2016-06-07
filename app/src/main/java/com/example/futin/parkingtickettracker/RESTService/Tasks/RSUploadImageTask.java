@@ -11,6 +11,7 @@ import com.example.futin.parkingtickettracker.RESTService.response.RSUploadImage
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -26,7 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 
 public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageResponse> {
-    final String TAG="getCities";
+    final String TAG="imageUploadTask";
     RSUploadImageRequest request;
     RestTemplate restTemplate;
     AsyncTaskReturnData returnData;
@@ -42,16 +43,12 @@ public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageRespon
     protected RSUploadImageResponse doInBackground(Void... params) {
         try {
             HttpHeaders header = new HttpHeaders();
-            //header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
             header.set("Connection", "Keep-Alive");
             header.set("Content-Type", "multipart/form-data;boundary=" + boundary);
             String filePath=request.getFilePath();
-            String fileName=request.getFileName();
-
             MultiValueMap<String, Object> parts =
                     new LinkedMultiValueMap<>();
-            parts.add("file", filePath);
-            parts.add("filename", fileName);
+            parts.add("ticketPhoto", new FileSystemResource(filePath));
             HttpEntity<MultiValueMap<String, Object>> entity =
                     new HttpEntity<>(parts, header);
             String address = RSDataSingleton.getInstance().getServerUrl().getUploadImageUrl();
@@ -72,13 +69,23 @@ public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageRespon
             } else {
                 Log.i(TAG, "Response ok ");
                 //TODO response
-                String json=response.getBody().toString();
-                Log.i(TAG, json);
+                String jsonBody=response.getBody().toString();
+                Log.i(TAG, jsonBody);
+                JSONArray array=new JSONArray(jsonBody);
+                String fileName="";
+                for (int i=0; i<array.length();i++){
+                    JSONObject objResponse=array.getJSONObject(i);
+                    Log.i(TAG,objResponse.toString());
+                    fileName=objResponse.getString("response");
+
+                }
+                Log.i(TAG, "fileName:  "+fileName);
+
+                return new RSUploadImageResponse(HttpStatus.OK,
+                        HttpStatus.OK.name(),fileName);
 
             }
 
-                return new RSUploadImageResponse(HttpStatus.OK,
-                        HttpStatus.OK.name());
 
 
 

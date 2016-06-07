@@ -5,10 +5,10 @@ package com.example.futin.parkingtickettracker.RESTService.data;
  */
 public class RSServerUrl {
     //localhost
-    private final static String API_BASE_URL="http://172.31.98.198:3000";
+    private final static String API_BASE_URL="http://192.168.1.182:3000";
 
     //dev
-   // private final static String API_BASE_URL="https://ara-fe-object-001.appspot.com";
+    //private final static String API_BASE_URL="https://ara-fe-object-001.appspot.com";
     private final static String API_UPLOAD_IMG="/upload";
 
     public String getBaseUrl(){
