@@ -121,6 +121,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Asy
                 }
                 break;
             case R.id.btnSubmit:
+
                 progressDialog.setMessage("Loading...");
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDialog.setProgress(0);
@@ -129,6 +130,8 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Asy
 
                 restService.uploadImage(fileName, filePath);
                 break;
+
+//                restService.sendSms("Hello Twilio App");
         }
     }
 
@@ -141,7 +144,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Asy
 
             Util.getOInstance().checkOrientation(filePath,imgForUpload);
             imgForUpload.setImageBitmap(img);
-
 
         }
     }
@@ -171,6 +173,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Asy
     @Override
     public void returnDataOnPostExecute(Object obj) {
         progressDialog.dismiss();
+
         response = (RSUploadImageResponse) obj;
         if(!response.getFileName().equalsIgnoreCase("")) {
             makeToast(response.getFileName() + " successfully uploaded");
@@ -185,6 +188,7 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Asy
 
             }
         }
+
     }
 
     private boolean shouldAskPermission() {
