@@ -14,5 +14,14 @@
         android:scaleType="fitXY"
         />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload image"
+        android:id="@+id/btnSubmitFromGallery"
+        android:layout_below="@+id/singleImagePagerView"
+        android:layout_alignEnd="@+id/singleImagePagerView"
+        android:layout_marginTop="10dp" />
+
 
 </RelativeLayout>

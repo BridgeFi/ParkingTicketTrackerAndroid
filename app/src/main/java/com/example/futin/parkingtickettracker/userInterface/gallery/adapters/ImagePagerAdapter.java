@@ -1,5 +1,6 @@
 package com.example.futin.parkingtickettracker.userInterface.gallery.adapters;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,12 +10,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.futin.parkingtickettracker.R;
+import com.example.futin.parkingtickettracker.RESTService.RestService;
+import com.example.futin.parkingtickettracker.RESTService.listeners.AsyncTaskReturnData;
 import com.example.futin.parkingtickettracker.RESTService.listeners.FileChangeListener;
 import com.example.futin.parkingtickettracker.RESTService.loader.LoadFiles;
+import com.example.futin.parkingtickettracker.RESTService.response.RSUploadImageResponse;
 import com.example.futin.parkingtickettracker.userInterface.util.Util;
 
 import java.io.File;
@@ -25,14 +30,19 @@ import java.util.ArrayList;
 /**
  * Created by Futin on 6/7/16.
  */
-public class ImagePagerAdapter extends PagerAdapter {
+public class ImagePagerAdapter extends PagerAdapter  implements AsyncTaskReturnData{
 
     private final String TAG="ImagePagerAdapter";
     Context context;
     LayoutInflater inflater;
     ViewPager viewPager;
+    Button btnSubmitFromGallery;
     FileChangeListener listener;
     LoadFiles loadFiles;
+    RestService restService;
+    RSUploadImageResponse response;
+    ProgressDialog progressDialog;
+
     int size=0;
 
     public ImagePagerAdapter(Context context, ViewPager viewPager, LoadFiles loadFiles) {
@@ -41,7 +51,8 @@ public class ImagePagerAdapter extends PagerAdapter {
         this.loadFiles=loadFiles;
         listener= (FileChangeListener) context;
         size=getFileSize();
-
+        restService=new RestService(this);
+        progressDialog=new ProgressDialog(context);
     }
 
     private int getFileSize(){
@@ -59,13 +70,28 @@ public class ImagePagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(ViewGroup container,final int position) {
         ImageView imageView;
 
         inflater= (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View viewLayout = inflater.inflate(R.layout.single_image_pager, container, false);
 
         imageView= (ImageView) viewLayout.findViewById(R.id.singleImagePagerView);
+        btnSubmitFromGallery= (Button) viewLayout.findViewById(R.id.btnSubmitFromGallery);
+
+        btnSubmitFromGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressDialog.setMessage("Loading...");
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.setProgress(0);
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
+                restService.uploadImage(loadFiles.getFileFromList(position).getName(),
+                        loadFiles.getFileFromList(position).getPath());
+            }
+        });
         Bitmap bitmap = decodeFile(loadFiles.getFileFromList(position));
         Util.getOInstance().checkOrientation(loadFiles.getFileFromList(position).getPath(),imageView);
 
@@ -125,4 +151,24 @@ public class ImagePagerAdapter extends PagerAdapter {
             return null;
         }
     }
+
+    @Override
+    public void returnDataOnPostExecute(Object obj) {
+        progressDialog.dismiss();
+        response = (RSUploadImageResponse) obj;
+        if (!response.getFileName().equalsIgnoreCase("")) {
+            makeToast(response.getFileName() + " successfully uploaded");
+        } else {
+            if (!response.getError().equalsIgnoreCase("")) {
+                Log.i("ImageUpload", response.getError());
+                makeToast(response.getError());
+            } else {
+                Log.i("ImageUpload", response.getStatus() + " " + response.getStatusName());
+                makeToast(response.getStatus() + " " + response.getStatusName());
+
+            }
+
+        }
+    }
+
 }

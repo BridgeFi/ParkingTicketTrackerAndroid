@@ -1,23 +1,21 @@
 package com.example.futin.parkingtickettracker.userInterface.home;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
+import android.provider.Settings;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,34 +28,34 @@ import android.widget.Toast;
 import com.example.futin.parkingtickettracker.R;
 import com.example.futin.parkingtickettracker.RESTService.RestService;
 import com.example.futin.parkingtickettracker.RESTService.listeners.AsyncTaskReturnData;
-import com.example.futin.parkingtickettracker.RESTService.loader.LoadFiles;
 import com.example.futin.parkingtickettracker.RESTService.response.RSUploadImageResponse;
 import com.example.futin.parkingtickettracker.userInterface.gallery.Gallery;
 import com.example.futin.parkingtickettracker.userInterface.util.Util;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Home extends ActionBarActivity implements View.OnClickListener, AsyncTaskReturnData
+public class Home extends AppCompatActivity implements View.OnClickListener, AsyncTaskReturnData
 
 {
 
     RSUploadImageResponse response;
     RestService restService;
-    LoadFiles fileLoader;
 
     private static final int CAMERA_REQUEST = 1000;
+    private final String TAG="Home";
     Button btnChoose;
     Button btnSubmit;
 
     ImageView imgForUpload;
     ProgressDialog progressDialog;
 
+
     Uri savedImage = null;
     String fileName = "";
     String filePath = "";
+    String android_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +73,7 @@ public class Home extends ActionBarActivity implements View.OnClickListener, Asy
         btnSubmit.setOnClickListener(this);
         setImageSize();
         readWritePermission();
+        getUniqueAndroidId();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -208,6 +207,12 @@ public class Home extends ActionBarActivity implements View.OnClickListener, Asy
 
     }
 
+    public void getUniqueAndroidId(){
+          android_id = Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        Log.i(TAG,"Android ID: "+android_id);
+
+    }
 
 }
 
