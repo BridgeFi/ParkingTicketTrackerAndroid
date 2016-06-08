@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.example.futin.parkingtickettracker.R;
 import com.example.futin.parkingtickettracker.RESTService.RestService;
-import com.example.futin.parkingtickettracker.RESTService.interfaces.AsyncTaskReturnData;
+import com.example.futin.parkingtickettracker.RESTService.listeners.AsyncTaskReturnData;
 import com.example.futin.parkingtickettracker.RESTService.loader.LoadFiles;
 import com.example.futin.parkingtickettracker.RESTService.response.RSUploadImageResponse;
 import com.example.futin.parkingtickettracker.userInterface.gallery.Gallery;
@@ -41,6 +41,8 @@ public class Home extends Activity implements View.OnClickListener, AsyncTaskRet
     private static final int CAMERA_REQUEST = 1000;
     Button btnChoose;
     Button btnSubmit;
+    Button btnGallery;
+
     ImageView imgForUpload;
     ProgressDialog progressDialog;
 
@@ -57,10 +59,12 @@ public class Home extends Activity implements View.OnClickListener, AsyncTaskRet
         restService = new RestService(this);
         btnChoose = (Button) findViewById(R.id.btnChoose);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
+        btnGallery = (Button) findViewById(R.id.btnGallery);
+
         imgForUpload = (ImageView) findViewById(R.id.imgForUpload);
         btnChoose.setOnClickListener(this);
         btnSubmit.setOnClickListener(this);
-
+        btnGallery.setOnClickListener(this);
         setImageSize();
         readWritePermission();
     }
@@ -82,18 +86,12 @@ public class Home extends Activity implements View.OnClickListener, AsyncTaskRet
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnChoose:
-                
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (cameraIntent.resolveActivity(getPackageManager()) != null) {
                     savedImage = createFolder();
                     cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, savedImage);
                     startActivityForResult(cameraIntent, CAMERA_REQUEST);
                 }
-                /*
-                Intent i = new Intent(Home.this, Gallery.class);
-                startActivity(i);
-                finish();
-                */
                 break;
             case R.id.btnSubmit:
                 progressDialog.setMessage("Loading...");
@@ -103,6 +101,10 @@ public class Home extends Activity implements View.OnClickListener, AsyncTaskRet
                 progressDialog.show();
 
                 restService.uploadImage(fileName, filePath);
+                break;
+            case R.id.btnGallery:
+                Intent i = new Intent(Home.this, Gallery.class);
+                startActivity(i);
                 break;
         }
     }

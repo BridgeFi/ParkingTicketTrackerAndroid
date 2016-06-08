@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.futin.parkingtickettracker.RESTService.data.RSDataSingleton;
-import com.example.futin.parkingtickettracker.RESTService.interfaces.AsyncTaskReturnData;
+import com.example.futin.parkingtickettracker.RESTService.listeners.AsyncTaskReturnData;
 import com.example.futin.parkingtickettracker.RESTService.request.RSUploadImageRequest;
 import com.example.futin.parkingtickettracker.RESTService.response.RSUploadImageResponse;
 

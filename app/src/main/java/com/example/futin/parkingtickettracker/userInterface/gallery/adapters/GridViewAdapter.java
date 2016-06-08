@@ -1,6 +1,7 @@
 package com.example.futin.parkingtickettracker.userInterface.gallery.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,10 @@ import android.widget.Toast;
 import com.example.futin.parkingtickettracker.R;
 import com.example.futin.parkingtickettracker.RESTService.loader.DisplayFiles;
 import com.example.futin.parkingtickettracker.RESTService.loader.LoadFiles;
+import com.example.futin.parkingtickettracker.userInterface.gallery.ImagePager;
 
+import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -71,12 +75,12 @@ public class GridViewAdapter extends BaseAdapter {
         }
             loadFromDisc(viewHolder.imageView, position);
 
-       // viewHolder.imageView.setOnClickListener(new OnImageClickListener(position));
+        viewHolder.imageView.setOnClickListener(new OnImageClickListener(position,loadFiles));
         return convertView;
     }
 
     void loadFromDisc(ImageView image, int position){
-        String file=null;
+        String file;
         Log.i(TAG, "Load from disc");
 
         if(!listOfFiles.isEmpty()){
@@ -90,6 +94,29 @@ public class GridViewAdapter extends BaseAdapter {
         }
     }
 
+    private class OnImageClickListener implements View.OnClickListener {
+
+        int position;
+        File file;
+        LoadFiles loadFiles;
+
+        // constructor
+        public OnImageClickListener(int position, LoadFiles loadFiles) {
+            this.position = position;
+            this.loadFiles=loadFiles;
+        }
+
+        @Override
+        public void onClick(View v) {
+            // on selecting grid view image
+            // launch full screen activity
+            Intent i = new Intent(context, ImagePager.class);
+            i.putExtra("position", position);
+            i.putExtra("file", loadFiles);
+
+            context.startActivity(i);
+        }
+    }
 
     private class ViewHolder{
         ImageView imageView;
