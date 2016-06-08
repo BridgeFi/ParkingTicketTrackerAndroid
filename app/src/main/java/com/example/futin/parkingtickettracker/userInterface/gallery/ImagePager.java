@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.example.futin.parkingtickettracker.R;
 import com.example.futin.parkingtickettracker.RESTService.listeners.FileChangeListener;
+import com.example.futin.parkingtickettracker.RESTService.loader.DisplayFiles;
 import com.example.futin.parkingtickettracker.RESTService.loader.LoadFiles;
 import com.example.futin.parkingtickettracker.userInterface.gallery.adapters.ImagePagerAdapter;
 
@@ -35,7 +36,7 @@ public class ImagePager extends Activity implements FileChangeListener{
 
         Intent i = getIntent();
         int position = i.getIntExtra("position", 0);
-        LoadFiles loadFiles= (LoadFiles) i.getSerializableExtra("file");
+        LoadFiles loadFiles= (LoadFiles) i.getSerializableExtra("loadFiles");
 
         adapter = new ImagePagerAdapter(this,viewPager,loadFiles);
         viewPager.setAdapter(adapter);

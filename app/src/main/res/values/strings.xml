@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">ParkingTicketTracker</string>
+    <string name="app_name"> </string>
     <string name="btnChoose">Click to insert image</string>
     <string name="btnSubmit">Upload image</string>
+    <string name="menu_gallery_title">Gallery</string>
 
 </resources>

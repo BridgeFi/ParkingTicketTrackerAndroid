@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -16,11 +17,12 @@ import java.util.concurrent.Executors;
 import android.os.Handler;
 
 import com.example.futin.parkingtickettracker.RESTService.loader.cache.MemoryCache;
+import com.example.futin.parkingtickettracker.userInterface.util.Util;
 
 /**
  * Created by Futin on 6/7/16.
  */
-public class DisplayFiles {
+public class DisplayFiles{
 
     LoadFiles loadFiles;
     private Map<ImageView, String> imageViews;
@@ -41,6 +43,7 @@ public class DisplayFiles {
         imageViews.put(imageView, fileName);
         Bitmap bitmap = memoryCache.get(fileName);
         if (bitmap != null){
+            Util.getOInstance().checkOrientation(loadFiles.getFile(fileName).getPath(),imageView);
             imageView.setImageBitmap(bitmap);
             // Class with method for setting animation, that takes context where should animation
             // be displayed, imageView that displays that photo and random duration from [0,500)ms
@@ -115,6 +118,8 @@ public class DisplayFiles {
             if (imageViewReused(photoToLoad))
                 return;
             if (bitmap != null) {
+                Util.getOInstance().checkOrientation(loadFiles.getFile(photoToLoad.fileName).getPath(),photoToLoad.imageView);
+
                 photoToLoad.imageView.setImageBitmap(bitmap);
                 // new MyAnimation().setAnimationRandom(context, photoToLoad.imageView, 250, R.anim.fade_in);
             }

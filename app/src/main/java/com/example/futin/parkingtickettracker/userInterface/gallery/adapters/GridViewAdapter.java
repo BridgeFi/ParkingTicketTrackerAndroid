@@ -89,7 +89,6 @@ public class GridViewAdapter extends BaseAdapter {
             displayFiles.displayImage(file,image);
         }else{
             Toast.makeText(context, "No files to display",Toast.LENGTH_LONG).show();
-            Log.i(TAG,"No files to display");
 
         }
     }
@@ -97,7 +96,6 @@ public class GridViewAdapter extends BaseAdapter {
     private class OnImageClickListener implements View.OnClickListener {
 
         int position;
-        File file;
         LoadFiles loadFiles;
 
         // constructor
@@ -112,7 +110,7 @@ public class GridViewAdapter extends BaseAdapter {
             // launch full screen activity
             Intent i = new Intent(context, ImagePager.class);
             i.putExtra("position", position);
-            i.putExtra("file", loadFiles);
+            i.putExtra("loadFiles", loadFiles);
 
             context.startActivity(i);
         }

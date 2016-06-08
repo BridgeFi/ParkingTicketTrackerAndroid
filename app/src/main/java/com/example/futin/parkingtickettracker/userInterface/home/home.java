@@ -4,15 +4,23 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -25,12 +33,14 @@ import com.example.futin.parkingtickettracker.RESTService.listeners.AsyncTaskRet
 import com.example.futin.parkingtickettracker.RESTService.loader.LoadFiles;
 import com.example.futin.parkingtickettracker.RESTService.response.RSUploadImageResponse;
 import com.example.futin.parkingtickettracker.userInterface.gallery.Gallery;
+import com.example.futin.parkingtickettracker.userInterface.util.Util;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Home extends Activity implements View.OnClickListener, AsyncTaskReturnData
+public class Home extends ActionBarActivity implements View.OnClickListener, AsyncTaskReturnData
 
 {
 
@@ -41,7 +51,6 @@ public class Home extends Activity implements View.OnClickListener, AsyncTaskRet
     private static final int CAMERA_REQUEST = 1000;
     Button btnChoose;
     Button btnSubmit;
-    Button btnGallery;
 
     ImageView imgForUpload;
     ProgressDialog progressDialog;
@@ -54,32 +63,51 @@ public class Home extends Activity implements View.OnClickListener, AsyncTaskRet
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_upload);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         progressDialog = new ProgressDialog(this);
         restService = new RestService(this);
         btnChoose = (Button) findViewById(R.id.btnChoose);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
-        btnGallery = (Button) findViewById(R.id.btnGallery);
 
         imgForUpload = (ImageView) findViewById(R.id.imgForUpload);
         btnChoose.setOnClickListener(this);
         btnSubmit.setOnClickListener(this);
-        btnGallery.setOnClickListener(this);
         setImageSize();
         readWritePermission();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_gallery:
+                Intent i = new Intent(Home.this, Gallery.class);
+                startActivity(i);
+                break;
+        }
+                return super.onOptionsItemSelected(item);
+
     }
 
     void setImageSize() {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        int height = metrics.heightPixels - 50;
-        int width = metrics.widthPixels - metrics.widthPixels / 3;
+        int height = metrics.heightPixels;
+        int width = metrics.widthPixels;
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(width, height);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(height, width);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        layoutParams.setMargins(10,40,10,40);
         imgForUpload.setLayoutParams(layoutParams);
 
+        imgForUpload.setRotation(90.f);
     }
 
     @Override
@@ -102,10 +130,6 @@ public class Home extends Activity implements View.OnClickListener, AsyncTaskRet
 
                 restService.uploadImage(fileName, filePath);
                 break;
-            case R.id.btnGallery:
-                Intent i = new Intent(Home.this, Gallery.class);
-                startActivity(i);
-                break;
         }
     }
 
@@ -115,7 +139,10 @@ public class Home extends Activity implements View.OnClickListener, AsyncTaskRet
 
             Bitmap img = BitmapFactory.decodeFile(savedImage.getPath());
             filePath = savedImage.getPath();
+
+            Util.getOInstance().checkOrientation(filePath,imgForUpload);
             imgForUpload.setImageBitmap(img);
+
 
         }
     }
@@ -169,6 +196,16 @@ public class Home extends Activity implements View.OnClickListener, AsyncTaskRet
 
     private void makeToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
+
+    void rotateImage(ImageView imageView){
+        Matrix matrix = new Matrix();
+        imageView.setScaleType(ImageView.ScaleType.MATRIX);   //required
+        matrix.postRotate((float) 90,
+                imageView.getDrawable().getBounds().width()/2,
+                imageView.getDrawable().getBounds().height()/2);
+        imageView.setImageMatrix(matrix);
+
     }
 
 
