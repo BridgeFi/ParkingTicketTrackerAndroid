@@ -24,20 +24,21 @@ import java.util.ArrayList;
  */
 public class GridViewAdapter extends BaseAdapter {
 
-    final String TAG="GridViewAdapter";
+    DisplayFiles displayFiles;
+    LoadFiles loadFiles;
+
     Context context;
     LayoutInflater inflater;
-    ArrayList<String>listOfFiles;
-    LoadFiles loadFiles;
-    DisplayFiles displayFiles;
     ViewHolder viewHolder;
+
+    final String TAG="GridViewAdapter";
+    ArrayList<String>listOfFiles;
 
     public GridViewAdapter( Context context) {
         this.context = context;
         loadFiles=new LoadFiles();
         displayFiles=new DisplayFiles(loadFiles);
         listOfFiles=loadFiles.getListOfFiles();
-
     }
 
     @Override
@@ -62,7 +63,6 @@ public class GridViewAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Log.i(TAG, "get view method");
-
         if(convertView == null){
 
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -85,14 +85,13 @@ public class GridViewAdapter extends BaseAdapter {
 
         if(!listOfFiles.isEmpty()){
             file=listOfFiles.get(position);
-            Log.i(TAG,"File: "+file+" at position: "+position);
             displayFiles.displayImage(file,image);
-        }else{
-            Toast.makeText(context, "No files to display",Toast.LENGTH_LONG).show();
-
         }
     }
-
+    /*
+    * Private image click listener that is used for sending data to ImagePager, along with current
+    * position and loadFiles class(by implementing Serialization)
+    * */
     private class OnImageClickListener implements View.OnClickListener {
 
         int position;
@@ -106,8 +105,6 @@ public class GridViewAdapter extends BaseAdapter {
 
         @Override
         public void onClick(View v) {
-            // on selecting grid view image
-            // launch full screen activity
             Intent i = new Intent(context, ImagePager.class);
             i.putExtra("position", position);
             i.putExtra("loadFiles", loadFiles);
@@ -115,7 +112,9 @@ public class GridViewAdapter extends BaseAdapter {
             context.startActivity(i);
         }
     }
-
+    /*
+    * View Holder class as part of loading images pattern
+    * */
     private class ViewHolder{
         ImageView imageView;
     }

@@ -13,13 +13,18 @@ import java.util.ArrayList;
  * Created by Futin on 6/7/16.
  */
 public class LoadFiles implements Serializable{
-    ArrayList<String>listOfFiles;
+
     File imagesFolder;
+    ArrayList<String>listOfFiles;
+    private static final String TAG = "LoadFiles";
 
     public LoadFiles() {
         listOfFiles=new ArrayList<>();
     }
-
+    /*
+    * Making sure that folder for saving images exist and getting list of all names, which will
+    * be used for displaying in Gallery
+    * */
     public ArrayList<String> getListOfFiles() {
         imagesFolder = new File(Environment.getExternalStorageDirectory(), "ParkingTicketImages");
         if (imagesFolder.exists()) {
@@ -27,15 +32,11 @@ public class LoadFiles implements Serializable{
                 listOfFiles.add(f.getName());
             }
         }
-        Log.i("listsize: ",listOfFiles.size()+"");
+        Log.i(TAG ,listOfFiles.size()+"");
         return listOfFiles;
     }
     public int getListSize(){
         return listOfFiles.size();
-    }
-
-    public File getImagesFolder(){
-        return imagesFolder;
     }
 
     public File getFile(String name){
@@ -49,6 +50,4 @@ public class LoadFiles implements Serializable{
             return null;
         }
     }
-
-
 }

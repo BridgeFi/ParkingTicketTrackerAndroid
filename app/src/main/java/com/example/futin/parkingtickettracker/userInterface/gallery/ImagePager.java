@@ -19,16 +19,17 @@ import java.util.ArrayList;
  * Created by Futin on 6/7/16.
  */
 public class ImagePager extends Activity implements FileChangeListener{
-    private final String TAG="ImagePager";
-    private ViewPager viewPager;
+
     ImagePagerAdapter adapter;
+    private ViewPager viewPager;
+    private final String TAG="ImagePager";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pager_layout);
         viewPager= (ViewPager) findViewById(R.id.pager);
     }
-
 
     @Override
     public void onStart() {

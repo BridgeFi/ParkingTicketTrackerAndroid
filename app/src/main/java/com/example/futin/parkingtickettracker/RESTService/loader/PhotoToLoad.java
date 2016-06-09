@@ -6,6 +6,7 @@ import android.widget.ImageView;
  * Created by Futin on 6/7/16.
  */
 public class PhotoToLoad {
+
     public String fileName;
     public ImageView imageView;
 
@@ -13,5 +14,4 @@ public class PhotoToLoad {
         this.fileName = fileName;
         this.imageView = imageView;
     }
-
 }

@@ -1,4 +1,4 @@
-package com.example.futin.parkingtickettracker.RESTService.Tasks;
+package com.example.futin.parkingtickettracker.RESTService.tasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -6,21 +6,14 @@ import android.util.Log;
 import com.example.futin.parkingtickettracker.RESTService.data.RSDataSingleton;
 import com.example.futin.parkingtickettracker.RESTService.listeners.AsyncTaskReturnData;
 import com.example.futin.parkingtickettracker.RESTService.request.RSSendSmsRequest;
-import com.example.futin.parkingtickettracker.RESTService.request.RSUploadImageRequest;
 import com.example.futin.parkingtickettracker.RESTService.response.RSSendSmsResponse;
-import com.example.futin.parkingtickettracker.RESTService.response.RSUploadImageResponse;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -29,17 +22,18 @@ import org.springframework.web.client.RestTemplate;
  * Created by Futin on 6/8/16.
  */
 public class RSSendSmsTask extends AsyncTask<Void, Void, RSSendSmsResponse> {
-    final String TAG="SendSmsTask";
-    RSSendSmsRequest request;
+
     RestTemplate restTemplate;
+    RSSendSmsRequest request;
     AsyncTaskReturnData returnData;
+
+    final String TAG="SendSmsTask";
 
     public RSSendSmsTask( AsyncTaskReturnData returnData, RSSendSmsRequest request) {
         this.request=request;
         this.returnData = returnData;
         restTemplate=new RestTemplate();
     }
-
 
     @Override
     protected RSSendSmsResponse doInBackground(Void... params) {
@@ -72,9 +66,7 @@ public class RSSendSmsTask extends AsyncTask<Void, Void, RSSendSmsResponse> {
 
                 return new RSSendSmsResponse(HttpStatus.OK,
                         HttpStatus.OK.name());
-
             }
-
         } catch (HttpClientErrorException e) {
             Log.e(TAG, "Http Status: " + e.getStatusCode());
             Log.e(TAG, "Http Error: " + e.getResponseBodyAsString());

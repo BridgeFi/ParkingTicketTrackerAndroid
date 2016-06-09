@@ -4,6 +4,7 @@ package com.example.futin.parkingtickettracker.RESTService.data;
  * Created by Futin on 6/2/16.
  */
 public class RSDataSingleton {
+
     private static RSDataSingleton instance;
 
     public static RSDataSingleton getInstance() {

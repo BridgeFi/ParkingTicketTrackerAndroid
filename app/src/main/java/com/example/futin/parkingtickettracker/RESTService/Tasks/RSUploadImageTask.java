@@ -1,4 +1,4 @@
-package com.example.futin.parkingtickettracker.RESTService.Tasks;
+package com.example.futin.parkingtickettracker.RESTService.tasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -25,17 +25,18 @@ import org.springframework.web.client.RestTemplate;
 
 
 public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageResponse> {
-    final String TAG="imageUploadTask";
-    RSUploadImageRequest request;
+
     RestTemplate restTemplate;
+    RSUploadImageRequest request;
     AsyncTaskReturnData returnData;
+
+    final String TAG="imageUploadTask";
 
     public RSUploadImageTask( AsyncTaskReturnData returnData, RSUploadImageRequest request) {
         this.request=request;
         this.returnData = returnData;
         restTemplate=new RestTemplate();
     }
-
 
     @Override
     protected RSUploadImageResponse doInBackground(Void... params) {
@@ -45,9 +46,11 @@ public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageRespon
             header.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             String filePath=request.getFilePath();
+            //Using spring MultiValueMap for storing image that we want to upload
             MultiValueMap<String, Object> parts =
                     new LinkedMultiValueMap<>();
-
+            //adding image from local and using as a key same name as on Node.js so Multer module
+            //can recognize this image and process it
             parts.add("ticketPhoto", new FileSystemResource(filePath));
 
             HttpEntity<MultiValueMap<String, Object>> entity =
@@ -78,10 +81,8 @@ public class RSUploadImageTask extends AsyncTask<Void, Void, RSUploadImageRespon
                     Log.i(TAG,objResponse.toString());
                 }
                 Log.i(TAG, "fileName:  "+fileName);
-
                 return new RSUploadImageResponse(HttpStatus.OK,
                         HttpStatus.OK.name(),fileName);
-
             }
 
         } catch (HttpClientErrorException e) {

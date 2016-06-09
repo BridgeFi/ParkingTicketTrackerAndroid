@@ -19,17 +19,11 @@ public class Gallery extends Activity {
         setContentView(R.layout.activity_gallery);
 
         gridView = (GridView) findViewById(R.id.grid_view);
-        init();
-
-    }
-
-    private void init(){
         initAdapter();
     }
+
     private void initAdapter(){
         gridViewAdapter=new GridViewAdapter(this);
         gridView.setAdapter(gridViewAdapter);
     }
-
-
 }

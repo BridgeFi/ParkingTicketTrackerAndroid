@@ -4,6 +4,7 @@ package com.example.futin.parkingtickettracker.RESTService.request;
  * Created by Futin on 6/2/16.
  */
 public class RSUploadImageRequest {
+
     String fileName="";
     String filePath="";
 
@@ -22,6 +23,6 @@ public class RSUploadImageRequest {
 
     @Override
     public String toString() {
-        return "name="+fileName;
+        return "fileName="+fileName;
     }
 }

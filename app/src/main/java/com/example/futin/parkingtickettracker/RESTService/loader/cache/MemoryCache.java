@@ -12,6 +12,7 @@ import java.util.Map;
  * Created by Futin on 6/7/16.
  */
 public class MemoryCache {
+
     private static final String TAG = "MemoryCache";
 
     // Last argument true for LRU ordering
@@ -34,27 +35,27 @@ public class MemoryCache {
         Log.i(TAG, "MemoryCache will use up to " + limit / 1024. / 1024. + "MB");
     }
     /*
-        Using given url, return Bitmap from cache that url exist
-    */
-    public Bitmap get(String id) {
+    * Using given fileName, return Bitmap from stored cache
+    * */
+    public Bitmap get(String fileName) {
         try {
-            if (!cache.containsKey(id))
+            if (!cache.containsKey(fileName))
                 return null;
-            return cache.get(id);
+            return cache.get(fileName);
         } catch (NullPointerException ex) {
             ex.printStackTrace();
             return null;
         }
     }
     /*
-         Place url into cache for later use, and calculate size on every entry
+    * Place fileName into cache for later use, and calculate size on every entry
     */
-    public void put(String id, Bitmap bitmap) {
+    public void put(String fileName, Bitmap bitmap) {
         try {
-            if (cache.containsKey(id))
-                size -= getSizeInBytes(cache.get(id));
-            cache.put(id, bitmap);
-            Log.i("MemoryCache: ",cache.toString());
+            if (cache.containsKey(fileName))
+                size -= getSizeInBytes(cache.get(fileName));
+            cache.put(fileName, bitmap);
+            Log.i(TAG ,cache.toString());
 
             size += getSizeInBytes(bitmap);
             checkSize();
@@ -63,8 +64,8 @@ public class MemoryCache {
         }
     }
     /*
-        If size of cache is greater than its limit, this method is used to clean cache and
-        remove first item in map
+    * If size of cache is greater than its limit, this method is used to clean cache and
+    * remove first item in map
     */
     private void checkSize() {
         Log.i(TAG, "cache size=" + size + " length=" + cache.size());
@@ -82,8 +83,8 @@ public class MemoryCache {
         }
     }
     /*
-        If Memory Overload exception is caught, clear cache memory
-    */
+    * If Memory Overload exception is caught, clear cache memory
+    * */
     public void clear() {
         try {
             cache.clear();
@@ -93,8 +94,8 @@ public class MemoryCache {
         }
     }
     /*
-        Simple method for calculation the size in Bytes of every Bitmap
-    */
+    * Simple method for calculation the size in Bytes of every Bitmap
+    * */
     long getSizeInBytes(Bitmap bitmap) {
         if (bitmap == null)
             return 0;

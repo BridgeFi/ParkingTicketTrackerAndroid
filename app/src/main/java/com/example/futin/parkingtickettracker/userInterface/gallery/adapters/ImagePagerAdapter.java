@@ -32,36 +32,31 @@ import java.util.ArrayList;
  */
 public class ImagePagerAdapter extends PagerAdapter  implements AsyncTaskReturnData{
 
-    private final String TAG="ImagePagerAdapter";
-    Context context;
-    LayoutInflater inflater;
-    ViewPager viewPager;
-    Button btnSubmitFromGallery;
     FileChangeListener listener;
     LoadFiles loadFiles;
     RestService restService;
     RSUploadImageResponse response;
+
+    Context context;
+    LayoutInflater inflater;
+    ViewPager viewPager;
+    Button btnSubmitFromGallery;
     ProgressDialog progressDialog;
 
-    int size=0;
+    private final String TAG="ImagePagerAdapter";
 
     public ImagePagerAdapter(Context context, ViewPager viewPager, LoadFiles loadFiles) {
         this.context = context;
         this.viewPager = viewPager;
         this.loadFiles=loadFiles;
-        listener= (FileChangeListener) context;
-        size=getFileSize();
         restService=new RestService(this);
         progressDialog=new ProgressDialog(context);
-    }
-
-    private int getFileSize(){
-            return loadFiles.getListSize();
+        listener= (FileChangeListener) context;
     }
 
     @Override
     public int getCount() {
-        return size;
+        return loadFiles.getListSize();
     }
 
     @Override
@@ -82,6 +77,7 @@ public class ImagePagerAdapter extends PagerAdapter  implements AsyncTaskReturnD
         btnSubmitFromGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i(TAG,"on image click");
                 progressDialog.setMessage("Loading...");
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDialog.setProgress(0);
@@ -92,15 +88,17 @@ public class ImagePagerAdapter extends PagerAdapter  implements AsyncTaskReturnD
                         loadFiles.getFileFromList(position).getPath());
             }
         });
+        //decode file from disc
         Bitmap bitmap = decodeFile(loadFiles.getFileFromList(position));
+        //Using util class for checking orientation of saved file
         Util.getOInstance().checkOrientation(loadFiles.getFileFromList(position).getPath(),imageView);
 
         imageView.setImageBitmap(bitmap);
-
         container.addView(viewLayout);
 
         return viewLayout;
     }
+
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View) object);
@@ -136,7 +134,6 @@ public class ImagePagerAdapter extends PagerAdapter  implements AsyncTaskReturnD
                 height_tmp /= 2;
                 scale *= 2;
             }
-
             // Decode with inSampleSize
             BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize = scale;
@@ -146,15 +143,19 @@ public class ImagePagerAdapter extends PagerAdapter  implements AsyncTaskReturnD
             return bitmap;
         } catch (Throwable e) {
             e.printStackTrace();
-            if (e instanceof OutOfMemoryError)
-                Log.i("","");
+            if (e instanceof OutOfMemoryError){
+                Log.i(TAG,"Out of memory");
+            }
             return null;
         }
     }
-
+    /*
+    * Response from upload action
+    * */
     @Override
     public void returnDataOnPostExecute(Object obj) {
         progressDialog.dismiss();
+        listener.closeViewPager();
         response = (RSUploadImageResponse) obj;
         if (!response.getFileName().equalsIgnoreCase("")) {
             makeToast(response.getFileName() + " successfully uploaded");
@@ -165,10 +166,7 @@ public class ImagePagerAdapter extends PagerAdapter  implements AsyncTaskReturnD
             } else {
                 Log.i("ImageUpload", response.getStatus() + " " + response.getStatusName());
                 makeToast(response.getStatus() + " " + response.getStatusName());
-
             }
-
         }
     }
-
 }

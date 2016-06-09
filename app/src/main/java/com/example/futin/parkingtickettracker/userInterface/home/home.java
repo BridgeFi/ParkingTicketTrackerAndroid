@@ -36,26 +36,22 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Home extends AppCompatActivity implements View.OnClickListener, AsyncTaskReturnData
+public class Home extends AppCompatActivity implements View.OnClickListener, AsyncTaskReturnData {
 
-{
-
-    RSUploadImageResponse response;
     RestService restService;
+    RSUploadImageResponse response;
 
-    private static final int CAMERA_REQUEST = 1000;
-    private final String TAG="Home";
     Button btnChoose;
     Button btnSubmit;
-
     ImageView imgForUpload;
     ProgressDialog progressDialog;
 
-
-    Uri savedImage = null;
-    String fileName = "";
-    String filePath = "";
-    String android_id;
+    private static final int CAMERA_REQUEST = 1000;
+    private final String TAG="Home";
+    private Uri savedImage = null;
+    private String fileName = "";
+    private String filePath = "";
+    private String android_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,14 +63,15 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Asy
         restService = new RestService(this);
         btnChoose = (Button) findViewById(R.id.btnChoose);
         btnSubmit = (Button) findViewById(R.id.btnSubmit);
-
         imgForUpload = (ImageView) findViewById(R.id.imgForUpload);
+
         btnChoose.setOnClickListener(this);
         btnSubmit.setOnClickListener(this);
         setImageSize();
         readWritePermission();
-        getUniqueAndroidId();
+//        getUniqueAndroidId();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -91,22 +88,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Asy
                 break;
         }
                 return super.onOptionsItemSelected(item);
-
-    }
-
-    void setImageSize() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-        int height = metrics.heightPixels;
-        int width = metrics.widthPixels;
-
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(height, width);
-        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        layoutParams.setMargins(10,40,10,40);
-        imgForUpload.setLayoutParams(layoutParams);
-
-        imgForUpload.setRotation(90.f);
     }
 
     @Override
@@ -121,7 +102,6 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Asy
                 }
                 break;
             case R.id.btnSubmit:
-
                 progressDialog.setMessage("Loading...");
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDialog.setProgress(0);
@@ -130,44 +110,8 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Asy
 
                 restService.uploadImage(fileName, filePath);
                 break;
-
-//                restService.sendSms("Hello Twilio App");
+//               restService.sendSms("Hello Twilio App");
         }
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            Log.i("URI: ", savedImage.getPath() + "");
-
-            Bitmap img = BitmapFactory.decodeFile(savedImage.getPath());
-            filePath = savedImage.getPath();
-
-            Util.getOInstance().checkOrientation(filePath,imgForUpload);
-            imgForUpload.setImageBitmap(img);
-
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private void readWritePermission() {
-        if (shouldAskPermission()) {
-            String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE"};
-            int permsRequestCode = 200;
-            requestPermissions(perms, permsRequestCode);
-        }
-
-    }
-
-    private Uri createFolder() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File imagesFolder = new File(Environment.getExternalStorageDirectory(), "ParkingTicketImages");
-        if(!imagesFolder.exists()) {
-            imagesFolder.mkdirs();
-        }
-
-        File image = new File(imagesFolder, "PTT_" + timeStamp + ".jpg");
-        fileName = image.getName();
-        return Uri.fromFile(image);
     }
 
     @Override
@@ -185,38 +129,77 @@ public class Home extends AppCompatActivity implements View.OnClickListener, Asy
             }else{
                 Log.i("ImageUpload",response.getStatus()+" "+response.getStatusName());
                 makeToast(response.getStatus()+" "+response.getStatusName());
-
             }
         }
 
     }
+    /*
+    * Setting image size for different screen sizes
+    * */
+    void setImageSize() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
+        int height = metrics.heightPixels;
+        int width = metrics.widthPixels;
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(height, width);
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        imgForUpload.setLayoutParams(layoutParams);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
+            Log.i(TAG, savedImage.getPath() + " is img path");
+
+            Bitmap img = BitmapFactory.decodeFile(savedImage.getPath());
+            filePath = savedImage.getPath();
+
+            Util.getOInstance().checkOrientation(filePath,imgForUpload);
+            imgForUpload.setImageBitmap(img);
+        }
+    }
+    /*
+    * For newer version(6.0+) there is new permission system that need to be called in runtime
+    * */
+    @TargetApi(Build.VERSION_CODES.M)
+    private void readWritePermission() {
+        if (shouldAskPermission()) {
+            String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE"};
+            int permsRequestCode = 200;
+            requestPermissions(perms, permsRequestCode);
+        }
+    }
+    /*
+    * Creating folder for storing captured images and giving them unique name
+    * */
+    private Uri createFolder() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File imagesFolder = new File(Environment.getExternalStorageDirectory(), "ParkingTicketImages");
+        if(!imagesFolder.exists()) {
+            imagesFolder.mkdirs();
+        }
+        File image = new File(imagesFolder, "PTT_" + timeStamp + ".jpg");
+        fileName = image.getName();
+        return Uri.fromFile(image);
+    }
+    /*
+    * Another check for device SDK version
+    * */
     private boolean shouldAskPermission() {
-
         return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
-
     }
 
     private void makeToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
-
-    void rotateImage(ImageView imageView){
-        Matrix matrix = new Matrix();
-        imageView.setScaleType(ImageView.ScaleType.MATRIX);   //required
-        matrix.postRotate((float) 90,
-                imageView.getDrawable().getBounds().width()/2,
-                imageView.getDrawable().getBounds().height()/2);
-        imageView.setImageMatrix(matrix);
-
-    }
-
+    /*
+    * Might need later for getting unique ID and storing files using this ID
+    * */
     public void getUniqueAndroidId(){
           android_id = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         Log.i(TAG,"Android ID: "+android_id);
-
     }
-
 }
 

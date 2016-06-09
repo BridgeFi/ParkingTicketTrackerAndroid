@@ -1,7 +1,7 @@
 package com.example.futin.parkingtickettracker.RESTService;
 
-import com.example.futin.parkingtickettracker.RESTService.Tasks.RSSendSmsTask;
-import com.example.futin.parkingtickettracker.RESTService.Tasks.RSUploadImageTask;
+import com.example.futin.parkingtickettracker.RESTService.tasks.RSSendSmsTask;
+import com.example.futin.parkingtickettracker.RESTService.tasks.RSUploadImageTask;
 import com.example.futin.parkingtickettracker.RESTService.listeners.AsyncTaskReturnData;
 import com.example.futin.parkingtickettracker.RESTService.request.RSSendSmsRequest;
 import com.example.futin.parkingtickettracker.RESTService.request.RSUploadImageRequest;

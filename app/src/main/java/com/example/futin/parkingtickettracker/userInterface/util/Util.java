@@ -12,13 +12,17 @@ import java.io.IOException;
 public class Util {
 
     private static Util utilInstance;
+
     public static Util getOInstance(){
         if(utilInstance == null){
             utilInstance = new Util();
         }
         return utilInstance;
     }
-
+    /*
+    * Change rotation of image depending on SDK version, so we can display every image in
+    * portrait
+    * */
     public void checkOrientation(String filePath, ImageView imageView){
         ExifInterface ei;
         try {
@@ -39,8 +43,5 @@ public class Util {
         } catch (IOException e) {
            // e.printStackTrace();
         }
-
     }
-
-
 }
